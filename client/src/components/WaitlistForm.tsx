@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { motion } from "framer-motion";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { waitlistSchema } from "@shared/schema";
@@ -11,8 +10,10 @@ interface WaitlistFormProps {
   onSuccess: () => void;
 }
 
-const formSchema = waitlistSchema.extend({
-  name: z.string().min(2, "Le nom est requis"),
+// Modified to only require email
+const formSchema = waitlistSchema.pick({
+  email: true,
+}).extend({
   email: z.string().email("Adresse email invalide"),
 });
 
@@ -30,7 +31,6 @@ const WaitlistForm = ({ onSuccess }: WaitlistFormProps) => {
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
       email: "",
     }
   });
@@ -38,7 +38,9 @@ const WaitlistForm = ({ onSuccess }: WaitlistFormProps) => {
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
     try {
-      await apiRequest("POST", "/api/waitlist", data);
+      // Add a default name since the form no longer collects it
+      const submitData = { ...data, name: "Utilisateur" };
+      await apiRequest("POST", "/api/waitlist", submitData);
       reset();
       onSuccess();
     } catch (error) {
@@ -53,40 +55,16 @@ const WaitlistForm = ({ onSuccess }: WaitlistFormProps) => {
   };
 
   return (
-    <motion.div
-      className="form-container flex flex-col justify-center items-start col-span-1"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 2.6, duration: 0.8 }}
-    >
-      <div className="form-label text-xs uppercase tracking-widest mb-5 opacity-70">
-        Accès en avant-première
-      </div>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="form w-full max-w-md">
-        <div className="form-group relative mb-6">
-          <input
-            type="text"
-            id="name"
-            placeholder="Votre nom"
-            className={`form-input w-full py-5 px-8 bg-white/[0.03] border ${
-              errors.name ? "border-red-500" : "border-white/10"
-            } rounded-full text-white text-base font-light transition-all duration-500 focus:outline-none focus:border-[var(--gold)] focus:bg-white/[0.05] focus:animate-pulse-glow`}
-            {...register("name")}
-          />
-          {errors.name && (
-            <p className="text-red-500 text-xs mt-1 ml-3">{errors.name.message}</p>
-          )}
-        </div>
-
-        <div className="form-group relative mb-8">
+    <div className="w-full">
+      <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+        <div className="relative mb-4">
           <input
             type="email"
             id="email"
             placeholder="Votre adresse email"
-            className={`form-input w-full py-5 px-8 bg-white/[0.03] border ${
-              errors.email ? "border-red-500" : "border-white/10"
-            } rounded-full text-white text-base font-light transition-all duration-500 focus:outline-none focus:border-[var(--gold)] focus:bg-white/[0.05] focus:animate-pulse-glow`}
+            className={`w-full py-4 px-6 bg-white/[0.08] border ${
+              errors.email ? "border-red-500" : "border-white/20"
+            } rounded-full text-white text-base transition-all focus:outline-none focus:border-[var(--gold)]`}
             {...register("email")}
           />
           {errors.email && (
@@ -97,13 +75,12 @@ const WaitlistForm = ({ onSuccess }: WaitlistFormProps) => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="submit-btn w-full py-5 px-8 bg-transparent border border-[var(--gold)] rounded-full text-[var(--gold)] text-sm font-medium tracking-widest uppercase transition-all duration-500 hover:bg-[var(--gold)] hover:text-black relative overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-4 px-6 bg-[var(--gold)] text-black rounded-full text-sm font-medium tracking-widest uppercase transition-all duration-300 hover:bg-[var(--gold)]/90 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? "Chargement..." : "Rejoindre la liste d'attente"}
-          <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-1000"></span>
         </button>
       </form>
-    </motion.div>
+    </div>
   );
 };
 
