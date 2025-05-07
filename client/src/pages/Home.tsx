@@ -17,10 +17,14 @@ const Home = () => {
   return (
     <div className="relative h-screen w-full overflow-hidden">
       {/* Full-page background image - Optimized WebP for better SEO */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center z-0"
-        style={{ backgroundImage: `url(/qudup-hero-optimized-v2.webp)` }}
-      />
+      <div className="absolute inset-0 bg-cover bg-center z-0">
+        <img 
+          src="/qudup-hero-optimized-v2.webp" 
+          alt="Elegant man using QudUP app in Paris" 
+          className="w-full h-full object-cover"
+          loading="eager"
+        />
+      </div>
       
       {/* Overlay for better text readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/70 z-10"></div>
