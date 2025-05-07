@@ -30,7 +30,7 @@ const Home = () => {
       <div className="relative z-20 h-full w-full flex flex-col items-center justify-center p-6">
         <div className="max-w-md w-full flex flex-col items-center">
           {/* Logo/Brand */}
-          <div className="text-4xl font-bold tracking-tight text-center mb-6 text-white">
+          <div className="text-5xl tracking-tight text-center mb-6 text-white font-anton">
             QudUP
           </div>
           
