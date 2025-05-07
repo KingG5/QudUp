@@ -2,10 +2,10 @@ import {
   users, type User, type InsertUser,
   waitlist, type Waitlist, type InsertWaitlist
 } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
-// modify the interface with any CRUD methods
-// you might need
-
+// Keep the interface the same
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -17,57 +17,46 @@ export interface IStorage {
   getAllWaitlistEntries(): Promise<Waitlist[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private waitlistEntries: Map<number, Waitlist>;
-  private userCurrentId: number;
-  private waitlistCurrentId: number;
-
-  constructor() {
-    this.users = new Map();
-    this.waitlistEntries = new Map();
-    this.userCurrentId = 1;
-    this.waitlistCurrentId = 1;
-  }
-
+// Replace MemStorage with DatabaseStorage to use persistent storage
+export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.userCurrentId++;
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
 
   async createWaitlistEntry(insertEntry: InsertWaitlist): Promise<Waitlist> {
-    const id = this.waitlistCurrentId++;
-    const createdAt = new Date();
-    const entry: Waitlist = { 
-      ...insertEntry, 
-      id, 
-      createdAt
-    };
-    this.waitlistEntries.set(id, entry);
+    const [entry] = await db
+      .insert(waitlist)
+      .values(insertEntry)
+      .returning();
     return entry;
   }
 
   async getWaitlistByEmail(email: string): Promise<Waitlist | undefined> {
-    return Array.from(this.waitlistEntries.values()).find(
-      (entry) => entry.email === email,
-    );
+    const [entry] = await db
+      .select()
+      .from(waitlist)
+      .where(eq(waitlist.email, email));
+    return entry || undefined;
   }
 
   async getAllWaitlistEntries(): Promise<Waitlist[]> {
-    return Array.from(this.waitlistEntries.values());
+    return await db.select().from(waitlist);
   }
 }
 
-export const storage = new MemStorage();
+// Use DatabaseStorage instead of MemStorage
+export const storage = new DatabaseStorage();
