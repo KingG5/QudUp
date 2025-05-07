@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="QudUP - Garde une longueur d'avance. L'application exclusive qui va tout changer.">
+    <meta property="og:title" content="QudUP - Garde une longueur d'avance">
+    <meta property="og:description" content="Soyez le premier à découvrir QudUP. Accès limité.">
+    <meta property="og:type" content="website">
+    <title>QudUP - Garde une longueur d'avance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #000000;
+            --white: #FFFFFF;
+            --gold: #D4AF37;
+            --neon: #00FFFF;
+            --transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+        
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 0 5px rgba(212, 175, 55, 0);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            }
+            100% {
+                box-shadow: 0 0 5px rgba(212, 175, 55, 0);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        @keyframes drawCheckmark {
+            0% {
+                stroke-dashoffset: 100;
+            }
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        @keyframes grain {
+            0%, 100% { transform: translate(0, 0) scale(1.1); }
+            10% { transform: translate(-1%, -1%) scale(1.1); }
+            20% { transform: translate(1%, 1%) scale(1.1); }
+            30% { transform: translate(2%, -2%) scale(1.1); }
+            40% { transform: translate(-2%, 2%) scale(1.1); }
+            50% { transform: translate(1%, -1%) scale(1.1); }
+            60% { transform: translate(-1%, 1%) scale(1.1); }
+            70% { transform: translate(3%, -3%) scale(1.1); }
+            80% { transform: translate(-3%, 3%) scale(1.1); }
+            90% { transform: translate(2%, -2%) scale(1.1); }
+        }
+        
+        body, html {
+            height: 100%;
+            background-color: var(--black);
+            color: var(--white);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            overflow-x: hidden;
+            cursor: none;
+        }
+        
+        .cursor {
+            position: fixed;
+            width: 12px;
+            height: 12px;
+            background-color: var(--gold);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: width 0.3s, height 0.3s, background-color 0.3s;
+        }
+        
+        .cursor-trail {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background-color: var(--gold);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+        
+        .intro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--black);
+            z-index: 9997;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 1s forwards, fadeOut 1s forwards 2s;
+        }
+        
+        .intro-logo {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+            color: var(--white);
+            opacity: 0;
+            animation: fadeIn 1s forwards 0.5s;
+        }
+        
+        .container {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .grain-overlay {
+            position: fixed;
+            top: -150%;
+            left: -50%;
+            width: 300%;
+            height: 300%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.05;
+            z-index: 1000;
+            pointer-events: none;
+            animation: grain 8s steps(10) infinite;
+        }
+        
+        .hero-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1511881830150-850572962174?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2338&q=80');
+            background-size: cover;
+            background-position: center;
+            transform-origin: center;
+            z-index: 1;
+            opacity: 0;
+            animation: fadeIn 1.2s forwards 1s;
+        }
+        
+        .parallax-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
+            z-index: 2;
+        }
+        
+        .content {
+            position: relative;
+            z-index: 5;
+            height: 100%;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr auto;
+            grid-template-areas: 
+                "header header"
+                "main form"
+                "footer footer";
+            padding: 40px;
+        }
+        
+        header {
+            grid-area: header;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0;
+            animation: fadeIn 0.8s forwards 2s;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -2px;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 30px;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.7;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        nav ul li:hover {
+            opacity: 1;
+            color: var(--gold);
+        }
+        
+        main {
+            grid-area: main;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-right: 40px;
+        }
+        
+        .headline {
+            font-size: 5vw;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -2px;
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: fadeUp 0.8s forwards 2.2s;
+        }
+        
+        .headline span {
+            display: block;
+        }
+        
+        .highlight {
+            color: var(--gold);
+        }
+        
+        .tagline {
+            font-size: 1rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            max-width: 400px;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeUp 0.8s forwards 2.4s;
+        }
+        
+        .form-container {
+            grid-area: form;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            opacity: 0;
+            animation: fadeUp 0.8s forwards 2.6s;
+        }
+        
+        .form-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+        
+        .form {
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .form-group {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 20px 30px;
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            color: var(--white);
+            font-size: 1rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            transition: var(--transition);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            background-color: rgba(255, 255, 255, 0.05);
+            animation: pulseGlow 2s infinite;
+        }
+        
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 20px 30px;
+            background-color: transparent;
+            border: 1px solid var(--gold);
+            border-radius: 50px;
+            color: var(--gold);
+            font-size: 0.9rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .submit-btn:hover {
+            background-color: var(--gold);
+            color: var(--black);
+        }
+        
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: var(--transition);
+        }
+        
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+        
+        .success-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+        
+        .success-container.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 30px;
+        }
+        
+        .checkmark svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .checkmark svg path {
+            fill: none;
+            stroke: var(--gold);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: drawCheckmark 1s forwards 0.3s;
+        }
+        
+        .success-message {
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            text-align: center;
+            max-width: 500px;
+        }
+        
+        .count-container {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            z-index: 5;
+            opacity: 0;
+            animation: fadeUp 0.8s forwards 3s;
+        }
+        
+        .count-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.5;
+            margin-bottom: 5px;
+        }
+        
+        .count-value {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--gold);
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            animation: fadeIn 0.8s forwards 3.5s, float 2s ease-in-out infinite 4s;
+        }
+        
+        .scroll-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.5;
+            margin-bottom: 10px;
+        }
+        
+        .scroll-arrow {
+            width: 20px;
+            height: 20px;
+            border-left: 1px solid rgba(255, 255, 255, 0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+            transform: rotate(-45deg);
+        }
+        
+        footer {
+            grid-area: footer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0;
+            animation: fadeIn 0.8s forwards 3.2s;
+        }
+        
+        .copyright {
+            font-size: 0.7rem;
+            opacity: 0.5;
+        }
+        
+        .social-links {
+            display: flex;
+        }
+        
+        .social-link {
+            margin-left: 20px;
+            opacity: 0.5;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .social-link:hover {
+            opacity: 1;
+            color: var(--gold);
+        }
+        
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr auto;
+                grid-template-areas: 
+                    "header"
+                    "main"
+                    "form"
+                    "footer";
+            }
+            
+            main, .form-container {
+                padding: 20px 0;
+            }
+            
+            .headline {
+                font-size: 8vw;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            nav {
+                margin-top: 20px;
+            }
+            
+            nav ul li:first-child {
+                margin-left: 0;
+            }
+            
+            .headline {
+                font-size: 10vw;
+            }
+            
+            footer {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .social-links {
+                margin-top: 20px;
+            }
+            
+            .social-link:first-child {
+                margin-left: 0;
+            }
+
+            .cursor, .cursor-trail {
+                display: none;
+            }
+
+            body {
+                cursor: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-trail" id="cursor-trail"></div>
+    
+    <div class="intro">
+        <div class="intro-logo">QudUP</div>
+    </div>
+    
+    <div class="grain-overlay"></div>
+    
+    <div class="container">
+        <div class="hero-image" id="hero-image"></div>
+        <div class="overlay"></div>
+        
+        <div class="content">
+            <header>
+                <div class="logo">QudUP</div>
+                <nav>
+                    <ul>
+                        <li data-hover="À propos">À propos</li>
+                        <li data-hover="Fonctionnalités">Fonctionnalités</li>
+                        <li data-hover="Contact">Contact</li>
+                    </ul>
+                </nav>
+            </header>
+            
+            <main>
+                <h1 class="headline">
+                    <span>GARDE UNE</span>
+                    <span>LONGUEUR</span>
+                    <span>D'<span class="highlight">AVANCE</span></span>
+                </h1>
+                <p class="tagline">Une expérience numérique exclusive. Bientôt disponible pour un nombre limité d'utilisateurs.</p>
+            </main>
+            
+            <div class="form-container">
+                <div class="form-label">Recevez votre invitation</div>
+                <form class="form" id="email-form">
+                    <div class="form-group">
+                        <input type="email" class="form-input" placeholder="Votre email" required aria-label="Email address">
+                    </div>
+                    <button type="submit" class="submit-btn" aria-label="Submit email">
+                        REJOINDRE
+                    </button>
+                </form>
+                
+                <div class="success-container" id="success-container">
+                    <div class="checkmark">
+                        <svg viewBox="0 0 50 50">
+                            <path d="M10 25 L 20 35 L 40 15"></path>
+                        </svg>
+                    </div>
+                    <div class="success-message">Bienvenue dans le futur. Vous serez parmi les premiers.</div>
+                </div>
+            </div>
+            
+            <div class="count-container">
+                <div class="count-label">Liste d'attente</div>
+                <div class="count-value" id="counter">4,763</div>
+            </div>
+            
+            <div class="scroll-indicator">
+                <div class="scroll-label">Découvrir</div>
+                <div class="scroll-arrow"></div>
+            </div>
+            
+            <footer>
+                <div class="copyright">© 2025 QudUP. Tous droits réservés.</div>
+                <div class="social-links">
+                    <div class="social-link">Instagram</div>
+                    <div class="social-link">Twitter</div>
+                    <div class="social-link">LinkedIn</div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    
+    <script>
+        // Custom cursor
+        const cursor = document.getElementById('cursor');
+        const cursorTrail = document.getElementById('cursor-trail');
+        const heroImage = document.getElementById('hero-image');
+        const emailForm = document.getElementById('email-form');
+        const successContainer = document.getElementById('success-container');
+        const counter = document.getElementById('counter');
+        
+        // Cursor movement
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            setTimeout(() => {
+                cursorTrail.style.left = e.clientX + 'px';
+                cursorTrail.style.top = e.clientY + 'px';
+            }, 100);
+            
+            // Parallax effect for hero image
+            const xPos = (e.clientX / window.innerWidth - 0.5) * 30;
+            const yPos = (e.clientY / window.innerHeight - 0.5) * 30;
+            
+            heroImage.style.transform = `translate(${xPos}px, ${yPos}px) scale(1.1)`;
+        });
+        
+        // Change cursor on interactive elements
+        document.querySelectorAll('button, input, nav ul li, .social-link').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                cursor.style.width = '30px';
+                cursor.style.height = '30px';
+                cursor.style.backgroundColor = 'var(--gold)';
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                cursor.style.width = '12px';
+                cursor.style.height = '12px';
+                cursor.style.backgroundColor = 'var(--gold)';
+            });
+        });
+        
+        // Count animation
+        let currentCount = 0;
+        const targetCount = parseInt(counter.innerHTML.replace(/,/g, ''));
+        
+        const animateCount = () => {
+            const increment = Math.ceil(targetCount / 100);
+            
+            if (currentCount < targetCount) {
+                currentCount += increment;
+                if (currentCount > targetCount) currentCount = targetCount;
+                counter.innerHTML = currentCount.toLocaleString();
+                requestAnimationFrame(animateCount);
+            }
+        };
+        
+        // Start count animation after delay
+        setTimeout(animateCount, 3500);
+        
+        // Form submission with email storage
+        emailForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get the email
+            const email = this.querySelector('input[type="email"]').value;
+            
+            // Show loading state
+            const submitBtn = this.querySelector('.submit-btn');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = 'TRAITEMENT...';
+            submitBtn.disabled = true;
+            
+            // In a real implementation, you would send this to your backend
+            // This is where you would make an API call to your server
+            
+            // For this demo, let's store in localStorage (client-side only)
+            // In production, you would send this to a real backend API
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                // Store email in localStorage
+                try {
+                    // Get existing emails or create new array
+                    let emails = JSON.parse(localStorage.getItem('qudup_emails') || '[]');
+                    
+                    // Add new email with timestamp
+                    emails.push({
+                        email: email,
+                        timestamp: new Date().toISOString(),
+                        source: 'landing_page'
+                    });
+                    
+                    // Save back to localStorage
+                    localStorage.setItem('qudup_emails', JSON.stringify(emails));
+                    
+                    // Log for debugging (you can check this in browser console)
+                    console.log('Stored emails:', emails);
+                    
+                    // Show success message
+                    successContainer.classList.add('show');
+                    
+                    // Reset form
+                    this.reset();
+                    
+                    // Increment counter
+                    incrementCounter();
+                } catch (error) {
+                    console.error('Error storing email:', error);
+                    alert('Une erreur est survenue. Veuillez réessayer.');
+                }
+                
+                // Reset button state
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+                
+                // Hide success message after 5 seconds
+                setTimeout(() => {
+                    successContainer.classList.remove('show');
+                }, 5000);
+            }, 1500);
+        });
+        
+        // Function to increment the counter
+        function incrementCounter() {
+            const currentCount = parseInt(counter.innerHTML.replace(/,/g, ''));
+            const newCount = currentCount + Math.floor(Math.random() * 3) + 1;
+            counter.innerHTML = newCount.toLocaleString();
+        }
+        
+        // For mobile, add a small parallax on device orientation
+        window.addEventListener('deviceorientation', (e) => {
+            if (e.beta && e.gamma) {
+                const xPos = e.gamma / 45 * 15;
+                const yPos = e.beta / 45 * 15;
+                
+                heroImage.style.transform = `translate(${xPos}px, ${yPos}px) scale(1.1)`;
+            }
+        });
+        
+        // Fix for iOS Safari 100vh issue
+        const fixHeight = () => {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        };
+        
+        window.addEventListener('resize', fixHeight);
+        window.addEventListener('orientationchange', fixHeight);
+        fixHeight();
+        
+        // Konami code easter egg
+        const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        let konamiIndex = 0;
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === konamiCode[konamiIndex]) {
+                konamiIndex++;
+                
+                if (konamiIndex === konamiCode.length) {
+                    // Easter egg found!
+                    document.body.style.backgroundColor = 'var(--gold)';
+                    document.body.style.color = 'var(--black)';
+                    
+                    setTimeout(() => {
+                        document.body.style.backgroundColor = 'var(--black)';
+                        document.body.style.color = 'var(--white)';
+                        konamiIndex = 0;
+                    }, 1000);
+                }
+            } else {
+                konamiIndex = 0;
+            }
+        });
+
+        // View all collected emails (for demo purposes)
+        // In a real implementation, this would be managed in your backend
+        function viewCollectedEmails() {
+            try {
+                const emails = JSON.parse(localStorage.getItem('qudup_emails') || '[]');
+                console.table(emails);
+                return emails;
+            } catch (error) {
+                console.error('Error retrieving emails:', error);
+                return [];
+            }
+        }
+
+        // You can call viewCollectedEmails() in the browser console to see emails
+        // This is just for testing - in a real app, you'd have admin access to a database
+    </script>
+</body>
+</html>
