@@ -53,9 +53,9 @@ const Home = () => {
             QudUP
           </div>
           
-          {/* Title - Now in uppercase */}
+          {/* Title - Now in uppercase with rewards mention */}
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-center leading-tight mb-4">
-            <span className="text-white uppercase">GARDE UNE LONGUEUR D'AVANCE</span>
+            <span className="text-white uppercase">GARDE UNE LONGUEUR D'AVANCE ET GAGNE DES RÉCOMPENSES</span>
           </h1>
           
           {/* Email collection form */}

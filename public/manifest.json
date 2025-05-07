@@ -1,7 +1,7 @@
 {
-  "name": "QudUP - GARDE UNE LONGUEUR D'AVANCE",
+  "name": "QudUP - GARDE UNE LONGUEUR D'AVANCE ET GAGNE DES RÉCOMPENSES",
   "short_name": "QudUP",
-  "description": "QudUP vous permet de garder une longueur d'avance dans votre quotidien. Rejoignez notre liste d'attente pour être parmi les premiers à découvrir cette application exclusive.",
+  "description": "QudUP vous permet de garder une longueur d'avance et de gagner des récompenses. Rejoignez notre liste d'attente pour être parmi les premiers à découvrir cette application exclusive.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",

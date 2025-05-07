@@ -10,8 +10,8 @@ interface SeoHeadProps {
 }
 
 const SeoHead: React.FC<SeoHeadProps> = ({
-  title = "QudUP - GARDE UNE LONGUEUR D'AVANCE | Application Exclusive",
-  description = "QudUP vous permet de garder une longueur d'avance dans votre quotidien. Rejoignez notre liste d'attente pour être parmi les premiers à découvrir cette application exclusive.",
+  title = "QudUP - GARDE UNE LONGUEUR D'AVANCE ET GAGNE DES RÉCOMPENSES | Application Exclusive",
+  description = "QudUP vous permet de garder une longueur d'avance et de gagner des récompenses. Rejoignez notre liste d'attente pour être parmi les premiers à découvrir cette application exclusive.",
   image = "https://qud.up/og-image.jpg",
   url = "https://qud.up/",
   type = "website",
