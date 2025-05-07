@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import WaitlistForm from "@/components/WaitlistForm";
 import SuccessMessage from "@/components/SuccessMessage";
 import imageUrl from "@assets/20250507_0228_Elegant Parisian Stride_simple_compose_01jtm27fd3egwsr0chvwyq3fsw.png";
+import { FaInstagram } from "react-icons/fa";
 
 const Home = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -34,10 +34,9 @@ const Home = () => {
             QudUP
           </div>
           
-          {/* Title */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-center leading-tight mb-4">
-            <span className="text-white">Garde une </span>
-            <span className="text-[var(--gold)]">longueur d'avance.</span>
+          {/* Title - Now in uppercase */}
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-center leading-tight mb-4">
+            <span className="text-white uppercase">GARDE UNE LONGUEUR D'AVANCE</span>
           </h1>
           
           {/* Email collection form */}
@@ -45,8 +44,21 @@ const Home = () => {
             <WaitlistForm onSuccess={handleFormSuccess} />
           </div>
           
+          {/* Social links */}
+          <div className="mt-6">
+            <a 
+              href="https://www.instagram.com/qud.up/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-white hover:text-gray-300 transition-colors"
+              aria-label="Instagram"
+            >
+              <FaInstagram size={24} />
+            </a>
+          </div>
+          
           {/* Copyright */}
-          <div className="mt-12 text-xs text-white/50 text-center">
+          <div className="mt-6 text-xs text-white/50 text-center">
             &copy; {new Date().getFullYear()} QudUP. Tous droits réservés.
           </div>
         </div>

@@ -14,19 +14,19 @@ const SuccessMessage = ({ isVisible, onClose }: SuccessMessageProps) => {
         >
           <div className="mb-6">
             <svg width="48" height="48" viewBox="0 0 48 48">
-              <circle cx="24" cy="24" r="23" fill="none" stroke="rgba(212, 175, 55, 0.2)" strokeWidth="2" />
+              <circle cx="24" cy="24" r="23" fill="none" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="2" />
               <circle 
                 cx="24" 
                 cy="24" 
                 r="23" 
                 fill="none" 
-                stroke="#D4AF37" 
+                stroke="white" 
                 strokeWidth="2" 
               />
               <path 
                 d="M12 24l8 8 16-16" 
                 fill="none" 
-                stroke="#D4AF37" 
+                stroke="white" 
                 strokeWidth="2" 
               />
             </svg>
@@ -37,7 +37,7 @@ const SuccessMessage = ({ isVisible, onClose }: SuccessMessageProps) => {
           </p>
           <button
             onClick={onClose}
-            className="px-6 py-2 bg-[var(--gold)] text-black rounded-full text-sm font-medium transition-all duration-300"
+            className="px-6 py-2 bg-white text-black rounded-full text-sm font-medium transition-all duration-300 hover:bg-gray-200"
           >
             Fermer
           </button>

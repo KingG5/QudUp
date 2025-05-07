@@ -64,7 +64,7 @@ const WaitlistForm = ({ onSuccess }: WaitlistFormProps) => {
             placeholder="Votre adresse email"
             className={`w-full py-4 px-6 bg-white/[0.08] border ${
               errors.email ? "border-red-500" : "border-white/20"
-            } rounded-full text-white text-base transition-all focus:outline-none focus:border-[var(--gold)]`}
+            } rounded-full text-white text-base transition-all focus:outline-none focus:border-white`}
             {...register("email")}
           />
           {errors.email && (
@@ -75,7 +75,7 @@ const WaitlistForm = ({ onSuccess }: WaitlistFormProps) => {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full py-4 px-6 bg-[var(--gold)] text-black rounded-full text-sm font-medium tracking-widest uppercase transition-all duration-300 hover:bg-[var(--gold)]/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-4 px-6 bg-white text-black rounded-full text-sm font-medium tracking-widest uppercase transition-all duration-300 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? "Chargement..." : "Rejoindre la liste d'attente"}
         </button>
