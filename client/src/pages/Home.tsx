@@ -16,14 +16,12 @@ const Home = () => {
 
   return (
     <div className="relative h-screen w-full overflow-hidden">
-      {/* Full-page background image - Using WebP for better SEO and performance */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src="/background.webp"
-          alt="Elegant man using QudUP app in Paris" 
-          className="w-full h-full object-cover"
-          loading="eager"
-        />
+      {/* Full-page background image */}
+      <div className="absolute inset-0 z-0" style={{
+        backgroundImage: 'url(/background.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}>
       </div>
       
       {/* Overlay for better text readability */}
