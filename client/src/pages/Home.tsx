@@ -16,10 +16,10 @@ const Home = () => {
 
   return (
     <div className="relative h-screen w-full overflow-hidden">
-      {/* Full-page background image - Optimized WebP for better SEO */}
-      <div className="absolute inset-0 bg-cover bg-center z-0">
+      {/* Full-page background image */}
+      <div className="absolute inset-0 z-0">
         <img 
-          src="/qudup-hero-optimized-v2.webp" 
+          src="/20250507_0228_Elegant Parisian Stride_simple_compose_01jtm27fd3egwsr0chvwyq3fsw.png"
           alt="Elegant man using QudUP app in Paris" 
           className="w-full h-full object-cover"
           loading="eager"
