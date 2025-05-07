@@ -1,7 +1,6 @@
 import { useState } from "react";
 import WaitlistForm from "@/components/WaitlistForm";
 import SuccessMessage from "@/components/SuccessMessage";
-import imageUrl from "@assets/20250507_0228_Elegant Parisian Stride_simple_compose_01jtm27fd3egwsr0chvwyq3fsw.png";
 import { FaInstagram } from "react-icons/fa";
 
 const Home = () => {
@@ -17,10 +16,10 @@ const Home = () => {
 
   return (
     <div className="relative h-screen w-full overflow-hidden">
-      {/* Full-page background image */}
+      {/* Full-page background image - Optimized WebP for better SEO */}
       <div 
         className="absolute inset-0 bg-cover bg-center z-0"
-        style={{ backgroundImage: `url(${imageUrl})` }}
+        style={{ backgroundImage: `url(/qudup-hero-optimized-v2.webp)` }}
       />
       
       {/* Overlay for better text readability */}
