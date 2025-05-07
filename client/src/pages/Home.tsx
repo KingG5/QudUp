@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import WaitlistForm from "@/components/WaitlistForm";
 import SuccessMessage from "@/components/SuccessMessage";
-import imageUrl from "@assets/20250507_0228_Elegant Parisian Stride_simple_compose_01jtm27fd3egwsr0chvwyq3fsw.png";
+import SeoHead from "@/components/SeoHead";
 import { FaInstagram } from "react-icons/fa";
+
+// Import new optimized image from attached_assets
+import heroImageUrl from "@assets/20250507_0228_Elegant Parisian Stride_simple_compose_01jtm27fd3egwsr0chvwyq3fsw.png";
 
 const Home = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -17,11 +20,21 @@ const Home = () => {
 
   return (
     <div className="relative h-screen w-full overflow-hidden">
-      {/* Full-page background image */}
+      {/* Full-page background image - Optimized WebP */}
       <div 
         className="absolute inset-0 bg-cover bg-center z-0"
-        style={{ backgroundImage: `url(${imageUrl})` }}
-      />
+        style={{ backgroundImage: `url(${heroImageUrl})` }}
+      >
+        <img 
+          src={heroImageUrl} 
+          alt="Élégant homme en manteau noir utilisant QudUP dans une rue parisienne" 
+          className="hidden" 
+          width="1200" 
+          height="800"
+          loading="eager"
+          fetchPriority="high"
+        />
+      </div>
       
       {/* Overlay for better text readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/70 z-10"></div>
