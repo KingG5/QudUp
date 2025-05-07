@@ -20,6 +20,13 @@ const Home = () => {
 
   return (
     <div className="relative h-screen w-full overflow-hidden">
+      {/* SEO Metadata */}
+      <SeoHead 
+        title="QudUP - GARDE UNE LONGUEUR D'AVANCE | Application Exclusive"
+        description="QudUP vous permet de garder une longueur d'avance dans votre quotidien. Rejoignez notre liste d'attente pour être parmi les premiers à découvrir cette application exclusive."
+        image={heroImageUrl}
+      />
+      
       {/* Full-page background image - Optimized WebP */}
       <div 
         className="absolute inset-0 bg-cover bg-center z-0"
@@ -32,7 +39,6 @@ const Home = () => {
           width="1200" 
           height="800"
           loading="eager"
-          fetchPriority="high"
         />
       </div>
       
