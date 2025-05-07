@@ -25,7 +25,7 @@
   --radius: 2rem;
 
   /* Custom Colors */
-  --gold: #D4AF37;
+  --gold: #FFD700;
   --neon: #00FFFF;
   --black: #000000;
   --white: #FFFFFF;
@@ -102,13 +102,13 @@
 
 @keyframes pulseGlow {
   0% {
-    box-shadow: 0 0 5px rgba(212, 175, 55, 0);
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
   }
   50% {
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
   }
   100% {
-    box-shadow: 0 0 5px rgba(212, 175, 55, 0);
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
   }
 }
 
@@ -210,4 +210,14 @@
 
 .animation-delay-2800 {
   animation-delay: 2800ms;
+}
+
+/* Golden reward text effect */
+.shadow-reward {
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+  transition: text-shadow 0.3s ease-in-out;
+}
+
+.shadow-reward:hover {
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
 }

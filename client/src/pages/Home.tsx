@@ -53,9 +53,9 @@ const Home = () => {
             QudUP
           </div>
           
-          {/* Title - Now in uppercase with rewards mention */}
+          {/* Title - Now in uppercase with rewards mention and golden highlight */}
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-center leading-tight mb-4">
-            <span className="text-white uppercase">GARDE UNE LONGUEUR D'AVANCE ET GAGNE DES RÉCOMPENSES</span>
+            <span className="text-white uppercase">GARDE UNE LONGUEUR D'AVANCE ET GAGNE DES <span className="text-[#FFD700] shadow-reward animate-pulse-glow">RÉCOMPENSES</span></span>
           </h1>
           
           {/* Email collection form */}
