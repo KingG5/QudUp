@@ -2,11 +2,10 @@ name = "qudup-waitlist-api"
 main = "worker/index.js"
 compatibility_date = "2023-05-18"
 
-# Configure D1 database binding
-[[d1_databases]]
-binding = "DB"
-database_name = "qudup_waitlist"
-database_id = "${D1_DATABASE_ID}"  # Will be replaced by the environment variable during deployment
+# Configure KV namespace binding
+kv_namespaces = [
+  { binding = "WAITLIST_KV", id = "${KV_NAMESPACE_ID}" }
+]
 
 # Add CORS handling to allow requests from all Cloudflare Pages domains
 [vars]

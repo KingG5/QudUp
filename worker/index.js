@@ -1,6 +1,6 @@
 /**
  * QudUP Waitlist API
- * Cloudflare Worker implementation
+ * Cloudflare Worker implementation with KV Storage
  */
 
 /**
@@ -87,25 +87,72 @@ function isValidEmail(email) {
   return emailRegex.test(email);
 }
 
-// Create waitlist schema in D1 database
-async function setupDatabase(db) {
-  return db.prepare(`
-    CREATE TABLE IF NOT EXISTS waitlist (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      email TEXT NOT NULL UNIQUE,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `).run();
+// Generate a unique ID (since KV doesn't have auto-incrementing IDs like D1)
+function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+}
+
+// Helper to get all waitlist entries
+async function getAllWaitlistEntries(kv) {
+  // Get the list of all waitlist entry keys
+  const listResult = await kv.list({ prefix: 'waitlist:' });
+  
+  if (!listResult.keys || listResult.keys.length === 0) {
+    return [];
+  }
+  
+  // Fetch all entries in parallel
+  const entries = await Promise.all(
+    listResult.keys.map(async (key) => {
+      const value = await kv.get(key.name, 'json');
+      return value;
+    })
+  );
+  
+  // Sort by created_at timestamp (most recent first)
+  return entries.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+}
+
+// Helper to check if an email already exists
+async function getWaitlistByEmail(kv, email) {
+  // Get the entry index
+  const emailIndex = await kv.get(`email:${email}`);
+  
+  if (!emailIndex) {
+    return null;
+  }
+  
+  // Get the actual entry
+  return await kv.get(emailIndex, 'json');
+}
+
+// Helper to create a new waitlist entry
+async function createWaitlistEntry(kv, data) {
+  const id = generateId();
+  const timestamp = new Date().toISOString();
+  
+  const entry = {
+    id,
+    name: data.name,
+    email: data.email,
+    created_at: timestamp
+  };
+  
+  const key = `waitlist:${id}`;
+  
+  // Store the entry
+  await kv.put(key, JSON.stringify(entry));
+  
+  // Create an email index for quick lookups
+  await kv.put(`email:${data.email}`, key);
+  
+  return entry;
 }
 
 // Main worker event handler
 export default {
   async fetch(request, env, ctx) {
     try {
-      // Setup database if needed
-      await setupDatabase(env.DB);
-      
       // Handle CORS preflight requests
       if (request.method === 'OPTIONS') {
         return handleOptions(request, env);
@@ -116,7 +163,11 @@ export default {
       
       // Add a health check endpoint
       if (path === '/api/health') {
-        return jsonResponse({ status: 'ok', timestamp: new Date().toISOString() }, 200, request, env);
+        return jsonResponse({ 
+          status: 'ok', 
+          storage: 'KV',
+          timestamp: new Date().toISOString() 
+        }, 200, request, env);
       }
       
       // API endpoints
@@ -124,8 +175,8 @@ export default {
         // GET - retrieve all waitlist entries
         if (request.method === 'GET') {
           try {
-            const entries = await env.DB.prepare('SELECT * FROM waitlist ORDER BY created_at DESC').all();
-            return jsonResponse(entries.results, 200, request, env);
+            const entries = await getAllWaitlistEntries(env.WAITLIST_KV);
+            return jsonResponse(entries, 200, request, env);
           } catch (error) {
             console.error('Error fetching waitlist entries:', error);
             return jsonResponse(
@@ -152,9 +203,7 @@ export default {
             }
             
             // Check if email already exists
-            const existingEntry = await env.DB.prepare('SELECT * FROM waitlist WHERE email = ?')
-              .bind(data.email)
-              .first();
+            const existingEntry = await getWaitlistByEmail(env.WAITLIST_KV, data.email);
               
             if (existingEntry) {
               return jsonResponse({ 
@@ -163,23 +212,12 @@ export default {
             }
             
             // Create the new entry
-            const result = await env.DB.prepare('INSERT INTO waitlist (name, email) VALUES (?, ?)')
-              .bind(data.name, data.email)
-              .run();
+            const newEntry = await createWaitlistEntry(env.WAITLIST_KV, data);
             
-            if (result.success) {
-              // Get the inserted entry
-              const newEntry = await env.DB.prepare('SELECT * FROM waitlist WHERE email = ?')
-                .bind(data.email)
-                .first();
-                
-              return jsonResponse({ 
-                message: 'Inscription réussie', 
-                data: newEntry 
-              }, 201, request, env);
-            } else {
-              throw new Error('Failed to insert data');
-            }
+            return jsonResponse({ 
+              message: 'Inscription réussie', 
+              data: newEntry 
+            }, 201, request, env);
           } catch (error) {
             console.error('Error processing waitlist submission:', error);
             return jsonResponse({ 
