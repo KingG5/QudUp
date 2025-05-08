@@ -3,29 +3,80 @@
  * Cloudflare Worker implementation
  */
 
-// CORS headers for all responses
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Access-Control-Max-Age': '86400',
-};
+/**
+ * Generate CORS headers based on the request origin and allowed origins config
+ * This function ensures that CORS works correctly in both development and production
+ */
+function getCorsHeaders(request, env) {
+  // Get the Origin header from the request
+  const origin = request.headers.get('Origin');
+  
+  // Default CORS headers
+  const headers = {
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Max-Age': '86400',
+  };
+  
+  // If no Origin header is present, use wildcard
+  if (!origin) {
+    headers['Access-Control-Allow-Origin'] = '*';
+    return headers;
+  }
+  
+  // Get allowed origins from the environment variable (set in wrangler.toml)
+  const allowedOriginsStr = env.ALLOWED_ORIGINS || '*.pages.dev,*.cloudflare.com';
+  const allowedOrigins = allowedOriginsStr.split(',').map(o => o.trim());
+  
+  // Check if the request origin matches any of the allowed patterns
+  let isAllowed = false;
+  
+  for (const pattern of allowedOrigins) {
+    if (pattern === '*') {
+      isAllowed = true;
+      break;
+    }
+    
+    if (pattern.startsWith('*.')) {
+      // For wildcard subdomains (*.example.com)
+      const domain = pattern.substring(2);
+      if (origin.endsWith(domain)) {
+        isAllowed = true;
+        break;
+      }
+    } else if (pattern === origin) {
+      // Exact match
+      isAllowed = true;
+      break;
+    }
+  }
+  
+  // If allowed, reflect the origin
+  if (isAllowed) {
+    headers['Access-Control-Allow-Origin'] = origin;
+  } else {
+    // Default to all in development mode
+    headers['Access-Control-Allow-Origin'] = '*';
+  }
+  
+  return headers;
+}
 
 // Helper function to handle OPTIONS requests (CORS preflight)
-function handleOptions(request) {
+function handleOptions(request, env) {
   return new Response(null, {
     status: 204,
-    headers: corsHeaders
+    headers: getCorsHeaders(request, env)
   });
 }
 
 // Helper to return JSON responses
-function jsonResponse(data, status = 200) {
+function jsonResponse(data, status = 200, request, env) {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
       'Content-Type': 'application/json',
-      ...corsHeaders
+      ...getCorsHeaders(request, env)
     }
   });
 }

@@ -1,5 +1,43 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+/**
+ * Determines the base URL for API requests based on the environment
+ * - In development: empty string (relative URL, handled by the dev server)
+ * - In production with env variable: Uses VITE_API_URL
+ * - In production without env variable: Auto-detects based on Cloudflare Worker naming convention
+ */
+function getApiBaseUrl(): string {
+  if (import.meta.env.DEV) {
+    // In development, use relative URLs
+    return '';
+  }
+
+  // In production, try to use the environment variable first
+  const envApiUrl = import.meta.env.VITE_API_URL;
+  if (envApiUrl) {
+    return envApiUrl;
+  }
+
+  // If no env variable is set, auto-detect the API URL based on Cloudflare naming convention
+  // This assumes your worker is deployed as qudup-waitlist-api.*.workers.dev
+  // and your Pages site is deployed under *.pages.dev
+  const currentHost = window.location.hostname;
+  
+  // If we're on Cloudflare Pages (*.pages.dev)
+  if (currentHost.endsWith('.pages.dev')) {
+    // Extract the account subdomain from the pages URL
+    const subdomain = currentHost.split('.')[0];
+    return `https://qudup-waitlist-api.${subdomain}.workers.dev`;
+  }
+  
+  // For custom domains or other deployments, fallback to relative URLs
+  return '';
+}
+
+// Get the base URL once at module load time
+const API_BASE_URL = getApiBaseUrl();
+console.log(`API base URL: ${API_BASE_URL}`);
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
@@ -12,9 +50,7 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  // Utiliser l'URL de base de l'API en production
-  const baseUrl = import.meta.env.VITE_API_URL || '';
-  const fullUrl = baseUrl + url;
+  const fullUrl = API_BASE_URL + url;
   
   console.log(`Making ${method} request to: ${fullUrl}`);
   
@@ -45,9 +81,7 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    // Utiliser l'URL de base de l'API en production
-    const baseUrl = import.meta.env.VITE_API_URL || '';
-    const fullUrl = baseUrl + (queryKey[0] as string);
+    const fullUrl = API_BASE_URL + (queryKey[0] as string);
     
     console.log(`Making GET request to: ${fullUrl}`);
     

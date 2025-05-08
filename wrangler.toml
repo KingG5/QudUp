@@ -6,4 +6,8 @@ compatibility_date = "2023-05-18"
 [[d1_databases]]
 binding = "DB"
 database_name = "qudup_waitlist"
-database_id = "placeholder"  # Replace with your actual D1 database ID after creation
+database_id = "${D1_DATABASE_ID}"  # Will be replaced by the environment variable during deployment
+
+# Add CORS handling to allow requests from all Cloudflare Pages domains
+[vars]
+ALLOWED_ORIGINS = "*.pages.dev,*.cloudflare.com"  # Add your custom domains here if needed
