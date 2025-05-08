@@ -1,0 +1,9 @@
+name = "qudup-waitlist-api"
+main = "worker/index.js"
+compatibility_date = "2023-05-18"
+
+# Configure D1 database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "qudup_waitlist"
+database_id = "placeholder"  # Replace with your actual D1 database ID after creation
